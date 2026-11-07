@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article | The Bigger Story Hub</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #f7f3eb;
+      color: #17243a;
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+    }
+
+    .wrap {
+      width: min(1100px, 92%);
+      margin: auto;
+    }
+
+    header {
+      background: #101d32;
+      color: white;
+      padding: 18px 0;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .brand {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brandmark {
+      background: #c83d38;
+      padding: 10px 15px;
+      font-size: 24px;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    .navlinks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .navlinks a {
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .navlinks a:hover { color: #e7b95c; }
+
+    main {
+      max-width: 850px;
+      margin: 55px auto;
+      padding: 0 20px;
+    }
+
+    .back {
+      color: #b52f32;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .category {
+      color: #b52f32;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-top: 30px;
+      font-size: 13px;
+    }
+
+    h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.15;
+      margin: 12px 0;
+    }
+
+    .meta {
+      color: #687080;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .hero-image {
+      width: 100%;
+      max-height: 480px;
+      object-fit: cover;
+      margin: 10px 0 25px;
+      border-radius: 5px;
+    }
+
+    .article-body {
+      font-family: Georgia, serif;
+      font-size: 19px;
+      line-height: 1.9;
+    }
+
+    .article-body p { margin-bottom: 24px; }
+
+    .article-body h2,
+    .article-body h3 {
+      font-family: Arial, sans-serif;
+      line-height: 1.3;
+    }
+
+    .message {
+      padding: 35px 0;
+      color: #687080;
+    }
+
+    footer {
+      background: #101d32;
+      color: white;
+      padding: 25px;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 650px) {
+      .nav { align-items: flex-start; }
+      .navlinks { gap: 10px; }
+      main { margin-top: 30px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <span class="brandmark">B</span>
+      <span>THE BIGGER STORY HUB
+        <small>NEWS • CONTEXT • STORIES</small>
+      </span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="index.html#latest">Latest</a>
+      <a href="index.html#latest">Africa</a>
+      <a href="index.html#latest">World</a>
+      <a href="index.html#latest">Politics</a>
+      <a href="index.html#latest">Business</a>
+      <a href="index.html#latest">Technology</a>
+      <a href="index.html#latest">Culture</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <a class="back" href="index.html#latest">← Back to Latest Stories</a>
+
+  <div id="articleContent" class="message">
+    Loading article...
+  </div>
+</main>
+
+<footer>
+  THE BIGGER STORY HUB
+  <p>News • Context • Stories</p>
+</footer>
+
+<script>
+  const projectId = 'pj5fusph';
+  const dataset = 'production';
+  const articleId = new URLSearchParams(window.location.search).get('id');
+
+  const query = `*[_type == "article" && _id == $id][0] {
+    title,
+    category,
+    author,
+    publishedAt,
+    "imageUrl": mainImage.asset->url,
+    body
+  }`;
+
+  const content = document.getElementById('articleContent');
+
+  function showArticle(article) {
+    content.className = '';
+
+    const category = document.createElement('div');
+    category.className = 'category';
+    category.textContent = article.category || 'Uncategorized';
+
+    const title = document.createElement('h1');
+    title.textContent = article.title || 'Untitled article';
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = [
+      article.author,
+      article.publishedAt
+        ? new Date(article.publishedAt).toLocaleDateString()
+        : ''
+    ].filter(Boolean).join(' · ');
+
+    content.replaceChildren(category, title, meta);
+
+    if (article.imageUrl) {
+      const image = document.createElement('img');
+      image.className = 'hero-image';
+      image.src = article.imageUrl;
+      image.alt = article.title || 'Article image';
+      content.append(image);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'article-body';
+
+    (article.body || []).forEach(block => {
+      if (block._type !== 'block') return;
+
+      const style = block.style || 'normal';
+      let element;
+
+      if (style === 'h2') element = document.createElement('h2');
+      else if (style === 'h3') element = document.createElement('h3');
+      else if (style === 'blockquote') element = document.createElement('blockquote');
+      else element = document.createElement('p');
+
+      (block.children || []).forEach(child => {
+        if (child._type === 'span') {
+          element.append(document.createTextNode(child.text || ''));
+        }
+      });
+
+      body.append(element);
+    });
+
+    content.append(body);
+    document.title = article.title + ' | The Bigger Story Hub';
+  }
+
+  if (!articleId) {
+    content.textContent = 'No article was selected.';
+  } else {
+    const url = `https://${projectId}.api.sanity.io/v2025-11-07/data/query/${dataset}`;
+
+    const params = new URLSearchParams();
+    params.set('query', query);
+    params.set('$id', JSON.stringify(articleId));
+
+    fetch(`${url}?${params.toString()}`)
+      .then(response => {
+        if (!response.ok) throw new Error('Article could not be loaded');
+        return response.json();
+      })
+      .then(data => {
+        if (!data.result) {
+          content.textContent = 'This article could not be found.';
+          return;
+        }
+
+        showArticle(data.result);
+      })
+      .catch(error => {
+        console.error(error);
+        content.textContent = 'Sorry, this article could not be loaded. Please try again.';
+      });
+  }
+</script>
+
+</body>
+</html>
