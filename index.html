@@ -120,6 +120,7 @@
 const sanityQuery = `*[_type == "article" && defined(publishedAt) && publishedAt <= now()] | order(publishedAt desc) {
   _id,
   title,
+  slug,
   category,
   author,
   publishedAt,
@@ -150,6 +151,10 @@ fetch(`${sanityUrl}?query=${encodeURIComponent(sanityQuery)}`)
     stories.forEach(article => {
       const card = document.createElement('article');
       card.className = 'story';
+      card.style.cursor = 'pointer';
+card.addEventListener('click', () => {
+  window.location.href = `article.html?id=${encodeURIComponent(article._id)}`;
+});
       card.dataset.category = article.category || 'Uncategorized';
 
       const art = document.createElement('div');
