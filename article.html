@@ -230,30 +230,74 @@
     const body = document.createElement('div');
     body.className = 'article-body';
 
+    let currentList = null;
+
     (article.body || []).forEach(block => {
       if (block._type !== 'block') return;
 
       const style = block.style || 'normal';
       let element;
 
-      if (style === 'h2') element = document.createElement('h2');
-      else if (style === 'h3') element = document.createElement('h3');
-      else if (style === 'blockquote') element = document.createElement('blockquote');
-      else element = document.createElement('p');
+      if (block.listItem === 'bullet' || block.listItem === 'number') {
+        const listType = block.listItem === 'bullet' ? 'ul' : 'ol';
+
+        if (!currentList || currentList.tagName.toLowerCase() !== listType) {
+          currentList = document.createElement(listType);
+          body.append(currentList);
+        }
+
+        element = document.createElement('li');
+        currentList.append(element);
+      } else {
+        currentList = null;
+
+        if (style === 'h1') element = document.createElement('h2');
+        else if (style === 'h2') element = document.createElement('h2');
+        else if (style === 'h3') element = document.createElement('h3');
+        else if (style === 'blockquote') element = document.createElement('blockquote');
+        else element = document.createElement('p');
+
+        body.append(element);
+      }
 
       (block.children || []).forEach(child => {
-        if (child._type === 'span') {
-          element.append(document.createTextNode(child.text || ''));
-        }
-      });
+        if (child._type !== 'span') return;
 
-      body.append(element);
+        let node = document.createTextNode(child.text || '');
+
+        (child.marks || []).forEach(mark => {
+          let wrapper;
+
+          if (mark === 'strong') wrapper = document.createElement('strong');
+          else if (mark === 'em') wrapper = document.createElement('em');
+          else if (mark === 'underline') wrapper = document.createElement('u');
+          else if (mark === 'strike-through') wrapper = document.createElement('s');
+          else if (mark === 'code') wrapper = document.createElement('code');
+
+          if (!wrapper && block.markDefs) {
+            const definition = block.markDefs.find(item => item._key === mark);
+
+            if (definition && definition._type === 'link' && definition.href) {
+              wrapper = document.createElement('a');
+              wrapper.href = definition.href;
+              wrapper.target = '_blank';
+              wrapper.rel = 'noopener noreferrer';
+            }
+          }
+
+          if (wrapper) {
+            wrapper.append(node);
+            node = wrapper;
+          }
+        });
+
+        element.append(node);
+      });
     });
 
     content.append(body);
-    document.title = article.title + ' | The Bigger Story Hub';
+document.title = article.title + ' | The Bigger Story Hub';
   }
-
   if (!articleId) {
     content.textContent = 'No article was selected.';
   } else {
