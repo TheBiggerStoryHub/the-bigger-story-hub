@@ -76,15 +76,7 @@
       <div>
         <div class="sectionhead" id="latest"><div><div class="category">From the newsroom</div><h2>Latest stories</h2></div><p>News, analysis and human stories from Nigeria, Africa and the wider world.</p></div>
         <div class="cards" id="storyGrid">
-          <article class="story" data-category="Politics"><div class="storyart"></div><div class="storybody"><div class="category">Politics</div><h3>What citizens should know when following public policy</h3><p>A practical guide to reading policy announcements, asking questions and understanding public impact.</p><div class="meta">EXPLAINER · SAMPLE CONTENT</div></div></article>
-          <article class="story" data-category="Business"><div class="storyart"></div><div class="storybody"><div class="category">Business</div><h3>Small businesses and the power of solving local problems</h3><p>Why useful ideas often begin with listening closely to the needs of a community.</p><div class="meta">BUSINESS · SAMPLE CONTENT</div></div></article>
-          <article class="story" data-category="Technology"><div class="storyart"></div><div class="storybody"><div class="category">Technology</div><h3>Making sense of artificial intelligence in everyday work</h3><p>An accessible introduction to the opportunities, limits and questions around AI tools.</p><div class="meta">TECHNOLOGY · SAMPLE CONTENT</div></div></article>
-          <article class="story" data-category="Entertainment"><div class="storyart"></div><div class="storybody"><div class="category">Entertainment</div><h3>How creative communities tell stories that travel</h3><p>Exploring the craft, collaboration and cultural perspectives behind memorable work.</p><div class="meta">CULTURE · SAMPLE CONTENT</div></div></article>
-          <article class="story" data-category="Opinion"><div class="storyart"></div><div class="storybody"><div class="category">Opinion</div><h3>Why context matters as much as the headline</h3><p>A note on responsible reading, careful sourcing and looking beyond first impressions.</p><div class="meta">COMMENTARY · SAMPLE CONTENT</div></div></article>
-          <article class="story" data-category="Education"><div class="storyart"></div><div class="storybody"><div class="category">Education</div><h3>Skills, opportunity and the future of learning</h3><p>Questions educators, learners and employers can explore as work continues to evolve.</p><div class="meta">EDUCATION · SAMPLE CONTENT</div></div></article>
-          <article class="story" data-category="Africa"><div class="storyart"></div><div class="storybody"><div class="category">Africa</div><h3>Across Africa: ideas, people and change to watch</h3><p>A regional lens on the people, policies and creative ideas shaping communities across the continent.</p><div class="meta">REGIONAL BRIEFING · SAMPLE</div></div></article>
-          <article class="story" data-category="World"><div class="storyart"></div><div class="storybody"><div class="category">World</div><h3>Understanding global events beyond the breaking headline</h3><p>Background and context to help readers follow international developments with care.</p><div class="meta">WORLD · SAMPLE</div></div></article>
-          <article class="story" data-category="Sports"><div class="storyart"></div><div class="storybody"><div class="category">Sports</div><h3>Sport, identity and the communities that rally behind teams</h3><p>Stories about performance, culture, teamwork and the wider impact of sport.</p><div class="meta">SPORT · SAMPLE</div></div></article>
+          
         </div>
         <div class="empty" id="empty">No matching sample stories. Try another search or category.</div><p class="editorial-note">Editorial transparency: these are sample story descriptions for the website preview, not published news reports. Replace them with original, verified articles before promoting the site as a live newsroom.</p>
       </div>
@@ -124,6 +116,98 @@
     $('#search').addEventListener('input',filterStories);
     document.querySelectorAll('.topic').forEach(btn=>btn.addEventListener('click',()=>{activeFilter=btn.dataset.filter;document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b===btn));filterStories()}));
     $('#signup').addEventListener('submit',e=>{e.preventDefault();$('#signupNote').textContent='Thanks for your interest. This preview does not save your email yet; connect a mailing-list provider before launch.';e.target.reset()});
-  </script>
+  // Load published stories from Sanity CMS
+const sanityQuery = `*[_type == "article" && defined(publishedAt) && publishedAt <= now()] | order(publishedAt desc) {
+  _id,
+  title,
+  category,
+  author,
+  publishedAt,
+  "imageUrl": mainImage.asset->url,
+  body
+}`;
+
+const sanityUrl = 'https://pj5fusph.api.sanity.io/v2025-11-07/data/query/production';
+
+fetch(`${sanityUrl}?query=${encodeURIComponent(sanityQuery)}`)
+  .then(response => {
+    if (!response.ok) throw new Error('Could not load articles');
+    return response.json();
+  })
+  .then(data => {
+    const stories = data.result || [];
+    const grid = document.querySelector('#storyGrid');
+    const empty = document.querySelector('#empty');
+
+    grid.replaceChildren();
+
+    if (stories.length === 0) {
+      empty.textContent = 'No published articles yet.';
+      empty.style.display = 'block';
+      return;
+    }
+
+    stories.forEach(article => {
+      const card = document.createElement('article');
+      card.className = 'story';
+      card.dataset.category = article.category || 'Uncategorized';
+
+      const art = document.createElement('div');
+      art.className = 'storyart';
+
+      if (article.imageUrl) {
+        art.style.backgroundImage = `url("${article.imageUrl}")`;
+        art.style.backgroundSize = 'cover';
+        art.style.backgroundPosition = 'center';
+      }
+
+      const body = document.createElement('div');
+      body.className = 'storybody';
+
+      const category = document.createElement('div');
+      category.className = 'category';
+      category.textContent = article.category || 'Uncategorized';
+
+      const title = document.createElement('h3');
+      title.textContent = article.title || 'Untitled article';
+
+      const paragraph = document.createElement('p');
+      const excerpt = (article.body || [])
+        .map(block => (block.children || [])
+          .map(child => child.text || '').join(' '))
+        .join(' ');
+      paragraph.textContent = excerpt.length > 180
+        ? excerpt.slice(0, 180) + '…'
+        : excerpt;
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = [
+        article.author,
+        article.publishedAt
+          ? new Date(article.publishedAt).toLocaleDateString()
+          : ''
+      ].filter(Boolean).join(' · ');
+
+      body.append(category, title, paragraph, meta);
+      card.append(art, body);
+      grid.append(card);
+    });
+
+    empty.style.display = 'none';
+    filterStories();
+  })
+  .catch(error => {
+    console.error('Sanity loading error:', error);
+    empty.textContent = 'Stories could not be loaded. Please try again later.';
+    empty.style.display = 'block';
+  });
+  // ========================================
+// THE BIGGER STORY HUB - SANITY CMS
+// Load published articles automatically
+// ========================================
+
+
+</script>
 </body>
 </html>
