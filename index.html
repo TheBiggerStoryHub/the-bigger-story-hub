@@ -155,6 +155,35 @@ fetch(`${sanityUrl}?query=${encodeURIComponent(sanityQuery)}`)
   })
   .then(data => {
     const stories = data.result || [];
+    const featuredTitles = [
+  'BEYOND THE HEADLINES: THE STORY BEHIND THE BIGGER STORY',
+  'WELCOME TO OUR NEWS PLATFORM'
+];
+
+const featuredCards = document.querySelectorAll('.hero-side .sidefeature');
+
+featuredTitles.forEach((targetTitle, index) => {
+  const article = stories.find(story =>
+    (story.title || '').trim().toLowerCase() === targetTitle.toLowerCase()
+  );
+
+  const card = featuredCards[index];
+
+  if (article && card) {
+    card.querySelector('h2').textContent = article.title;
+    card.querySelector('.category').textContent = article.category || 'Featured';
+
+    const meta = card.querySelector('.meta');
+    meta.textContent = article.author || 'THE BIGGER STORY HUB';
+
+    card.style.cursor = 'pointer';
+
+    card.addEventListener('click', () => {
+      window.location.href =
+        `article.html?id=${encodeURIComponent(article._id)}`;
+    });
+  }
+});
     const grid = document.querySelector('#storyGrid');
     const empty = document.querySelector('#empty');
 
