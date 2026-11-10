@@ -155,8 +155,9 @@ fetch(`${sanityUrl}?query=${encodeURIComponent(sanityQuery)}`)
   })
   .then(data => {
     const stories = data.result || [];
+    console.log(stories.map(story => story.title));
     const featuredTitles = [
-  'BEYOND THE HEADLINES: THE STORY BEHIND THE BIGGER STORY',
+  'Beyond the Headlines: The Story Behind The Bigger Story Hub',
   'WELCOME TO OUR NEWS PLATFORM'
 ];
 
