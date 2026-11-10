@@ -296,6 +296,28 @@
     });
 
     content.append(body);
+    const shareButton = document.createElement('a');
+
+shareButton.href = 'https://wa.me/?text=' + encodeURIComponent(
+  `${article.title} ${window.location.href}`
+);
+
+shareButton.target = '_blank';
+shareButton.rel = 'noopener noreferrer';
+shareButton.textContent = 'Share on WhatsApp';
+
+shareButton.style.cssText = `
+  display: inline-block;
+  background: #25D366;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 20px 0;
+`;
+
+content.append(shareButton);
 document.title = article.title + ' | The Bigger Story Hub';
   }
   if (!articleId) {
