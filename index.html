@@ -95,7 +95,25 @@
       </div>
     </div></section>
 
-    <section class="wrap section" id="newsletter"><div class="newsletter"><div><div class="eyebrow">Stay informed</div><h2>Get the bigger story in your inbox.</h2><p>Sign-up form preview. Connect a mailing-list service before collecting subscribers.</p></div><form class="signup" id="signup"><input type="email" id="email" placeholder="Your email address" required aria-label="Your email address"><button type="submit">Subscribe ↗</button></form></div><p class="notice" id="signupNote">Demo only: this form does not transmit or store email addresses.</p></section>
+    <section class="wrap section" id="newsletter">
+  <div class="newsletter">
+    <div>
+      <div class="eyebrow">Stay informed</div>
+      <h2>Get the bigger story in your inbox.</h2>
+      <p>Subscribe to receive independent news, useful context and important stories.</p>
+    </div>
+
+    <form class="signup" name="newsletter" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="newsletter">
+      <p hidden>
+        <label>Do not fill this out: <input name="bot-field"></label>
+      </p>
+      <input type="email" name="email" id="email" placeholder="Your email address" required aria-label="Your email address">
+      <button type="submit">Subscribe ↗</button>
+    </form>
+  </div>
+  <p class="notice" id="signupNote">Subscribe to stay connected with THE BIGGER STORY HUB.</p>
+</section>
   </main>
   <footer><div class="wrap"><div class="foot"><div><a class="brand" href="#"><span class="brandmark">B</span><span>THE BIGGER STORY HUB<small>NEWS • CONTEXT • STORIES</small></span></a><p>Independent news, wider perspectives and stories that help readers understand the issues shaping our communities and our world.</p></div><div class="footlinks"><a href="#latest">Latest stories</a><a href="#the-hub">Explore the hub</a><a href="#newsletter">Subscribe</a><a href="mailto:hello@thebiggerstoryhub.com">Contact the newsroom</a></div></div><div class="copyright"><span>© <span id="year"></span> THE BIGGER STORY HUB. All rights reserved.</span><span>Verify. Understand. Tell the bigger story.</span></div></div></footer>
   <script>
@@ -115,7 +133,7 @@
     function filterStories(){const q=$('#search').value.trim().toLowerCase();let shown=0;document.querySelectorAll('.story').forEach(card=>{const okCat=activeFilter==='All'||card.dataset.category===activeFilter;const okText=card.textContent.toLowerCase().includes(q);card.hidden=!(okCat&&okText);if(!card.hidden)shown++});$('#empty').style.display=shown?'none':'block'}
     $('#search').addEventListener('input',filterStories);
     document.querySelectorAll('.topic').forEach(btn=>btn.addEventListener('click',()=>{activeFilter=btn.dataset.filter;document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b===btn));filterStories()}));
-    $('#signup').addEventListener('submit',e=>{e.preventDefault();$('#signupNote').textContent='Thanks for your interest. This preview does not save your email yet; connect a mailing-list provider before launch.';e.target.reset()});
+    
   // Load published stories from Sanity CMS
 const sanityQuery = `*[_type == "article" && defined(publishedAt) && publishedAt <= now()] | order(publishedAt desc) {
   _id,
@@ -151,10 +169,6 @@ fetch(`${sanityUrl}?query=${encodeURIComponent(sanityQuery)}`)
     stories.forEach(article => {
       const card = document.createElement('article');
       card.className = 'story';
-      card.style.cursor = 'pointer';
-card.addEventListener('click', () => {
-  window.location.href = `article.html?id=${encodeURIComponent(article._id)}`;
-});
       card.dataset.category = article.category || 'Uncategorized';
 
       const art = document.createElement('div');
