@@ -171,6 +171,21 @@ featuredTitles.forEach((targetTitle, index) => {
   const card = featuredCards[index];
 
   if (article && card) {
+    let image = card.querySelector('img');
+
+if (!image) {
+  image = document.createElement('img');
+  image.style.width = '100%';
+  image.style.height = '180px';
+  image.style.objectFit = 'cover';
+  image.style.borderRadius = '8px';
+  card.prepend(image);
+}
+
+if (article.imageUrl) {
+  image.src = article.imageUrl;
+  image.alt = article.title;
+}
     card.querySelector('h2').textContent = article.title;
     card.querySelector('.category').textContent = article.category || 'Featured';
 
