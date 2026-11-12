@@ -52,13 +52,21 @@ export default {
             "'": "&#39;"
           })[char]);
 
-        const title = escapeHtml(
-          article.title || "The Bigger Story Hub"
-        );
+    const shorten = (value, maxLength) => {
+  const text = String(value || "").trim();
 
-        const description = escapeHtml(
-          article.excerpt || article.title || "Read the full story."
-        );
+  if (text.length <= maxLength) return text;
+
+  return text.slice(0, maxLength - 1).trimEnd() + "…";
+};
+
+const title = escapeHtml(
+  shorten(article.title || "The Bigger Story Hub", 60)
+);
+
+const description = escapeHtml(
+  shorten(article.excerpt || article.title || "Read the full story.", 125)
+);
 
         const image = escapeHtml(article.imageUrl || "");
 
