@@ -309,6 +309,7 @@ shareContainer.style.cssText = `
 
 const articleUrl = window.location.href;
 const articleTitle = article.title;
+    const previewUrl = `${window.location.origin}/article-preview?id=${encodeURIComponent(articleId)}`;
 
 function createShareButton(label, url, color) {
   const button = document.createElement('a');
@@ -332,11 +333,11 @@ function createShareButton(label, url, color) {
 }
 
 const encodedTitle = encodeURIComponent(articleTitle);
-const encodedUrl = encodeURIComponent(articleUrl);
+const encodedUrl = encodeURIComponent(previewUrl);
 
 createShareButton(
   'WhatsApp',
-  'https://wa.me/?text=' + encodeURIComponent(articleTitle + ' ' + articleUrl),
+  'https://wa.me/?text=' + encodeURIComponent(articleTitle + ' ' + previewUrl),
   '#25D366'
 );
 
