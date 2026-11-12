@@ -296,28 +296,99 @@
     });
 
     content.append(body);
-    const shareButton = document.createElement('a');
+   
+const shareContainer = document.createElement('div');
 
-shareButton.href = 'https://wa.me/?text=' + encodeURIComponent(
-  `${article.title} ${window.location.href}`
-);
-
-shareButton.target = '_blank';
-shareButton.rel = 'noopener noreferrer';
-shareButton.textContent = 'Share on WhatsApp';
-
-shareButton.style.cssText = `
-  display: inline-block;
-  background: #25D366;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
+shareContainer.style.cssText = `
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin: 20px 0;
 `;
 
-content.append(shareButton);
+const articleUrl = window.location.href;
+const articleTitle = article.title;
+
+function createShareButton(label, url, color) {
+  const button = document.createElement('a');
+  button.href = url;
+  button.target = '_blank';
+  button.rel = 'noopener noreferrer';
+  button.textContent = label;
+
+  button.style.cssText = `
+    display: inline-block;
+    background: ${color};
+    color: white;
+    padding: 11px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+  `;
+
+  shareContainer.append(button);
+}
+
+const encodedTitle = encodeURIComponent(articleTitle);
+const encodedUrl = encodeURIComponent(articleUrl);
+
+createShareButton(
+  'WhatsApp',
+  'https://wa.me/?text=' + encodeURIComponent(articleTitle + ' ' + articleUrl),
+  '#25D366'
+);
+
+createShareButton(
+  'Facebook',
+  'https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl,
+  '#1877F2'
+);
+
+createShareButton(
+  'X (Twitter)',
+  'https://twitter.com/intent/tweet?text=' + encodedTitle + '&url=' + encodedUrl,
+  '#000000'
+);
+
+createShareButton(
+  'LinkedIn',
+  'https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl,
+  '#0A66C2'
+);
+
+createShareButton(
+  'Telegram',
+  'https://t.me/share/url?url=' + encodedUrl + '&text=' + encodedTitle,
+  '#229ED9'
+);
+
+const copyButton = document.createElement('button');
+copyButton.textContent = 'Copy Link';
+
+copyButton.style.cssText = `
+  background: #263445;
+  color: white;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+`;
+
+copyButton.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(articleUrl);
+    copyButton.textContent = 'Link Copied!';
+  } catch (error) {
+    copyButton.textContent = 'Copy failed';
+  }
+};
+
+shareContainer.append(copyButton);
+content.append(shareContainer);
+
 document.title = article.title + ' | The Bigger Story Hub';
   }
   if (!articleId) {
