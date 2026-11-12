@@ -309,6 +309,7 @@ shareContainer.style.cssText = `
 
 const articleUrl = window.location.href;
 const articleTitle = article.title;
+    const previewUrl = `${window.location.origin}/.netlify/functions/article-preview?id=${encodeURIComponent(articleId)}`;
 
 function createShareButton(label, url, color) {
   const button = document.createElement('a');
@@ -332,7 +333,7 @@ function createShareButton(label, url, color) {
 }
 
 const encodedTitle = encodeURIComponent(articleTitle);
-const encodedUrl = encodeURIComponent(articleUrl);
+const encodedUrl = encodeURIComponent(previewUrl);
 
 createShareButton(
   'WhatsApp',
