@@ -383,7 +383,7 @@
     document.querySelectorAll('.topic').forEach(btn=>btn.addEventListener('click',()=>{activeFilter=btn.dataset.filter;document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b===btn));filterStories()}));
     
   // Load published stories from Sanity CMS
-const sanityQuery = `*[_type == "article" && defined(publishedAt) && publishedAt <= now()] | order(publishedAt desc) {
+const sanityQuery = `*[_type == "article" && editorialStatus == "ready" && defined(publishedAt) && publishedAt <= now() && (!defined(scheduledAt) || scheduledAt <= now())] | order(publishedAt desc) {
   _id,
   title,
   slug,
