@@ -309,7 +309,7 @@ shareContainer.style.cssText = `
 
 const articleUrl = window.location.href;
 const articleTitle = article.title;
-    const previewUrl = `${window.location.origin}/.netlify/functions/article-preview?id=${encodeURIComponent(articleId)}`;
+    const previewUrl = `${window.location.origin}/article-preview?id=${encodeURIComponent(articleId)}`;
 
 function createShareButton(label, url, color) {
   const button = document.createElement('a');
