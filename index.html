@@ -298,6 +298,18 @@
     .hub-card a{color:var(--red);font-size:11px;font-weight:850;margin-top:auto}
     .navlinks a[aria-current="page"]{color:var(--red)}
     .editorial-note{font-size:11px;color:#6f7886;margin-top:12px}
+    .category-directory{background:#fff;border-bottom:1px solid var(--line);padding:14px 0}
+    .category-directory .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .category-directory strong{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+    .category-links{display:flex;gap:8px;flex-wrap:wrap}
+    .category-links a{font-size:11px;font-weight:750;padding:6px 10px;border:1px solid var(--line);border-radius:3px;background:#faf9f6}
+    .category-links a:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .category-section{padding:34px 0 42px;border-bottom:1px solid var(--line);scroll-margin-top:100px}
+    .category-section .sectionhead{margin-bottom:18px}
+    .category-section .sectionhead h2{font-size:27px}
+    .category-empty{font-size:12px;color:var(--muted);padding:18px;background:#fff;border:1px dashed var(--line)}
+    .category-empty[hidden]{display:none}
+    @media(max-width:600px){.category-directory .wrap{align-items:flex-start}.category-links{gap:6px}.category-links a{font-size:10px;padding:6px 8px}}
     @media(max-width:950px){.hub-grid{grid-template-columns:repeat(2,1fr)}.hub-heading{align-items:start;flex-direction:column}}
     @media(max-width:600px){.hub-grid{grid-template-columns:1fr}.hub-card{min-height:unset}.hub-section{padding:42px 0}}
   </style>
@@ -307,11 +319,14 @@
   <div class="topline"><div class="wrap"><span><strong>THE BIGGER STORY HUB</strong> &nbsp; Independent news. Wider perspective.</span><span id="today"></span></div></div>
   <header><div class="wrap nav">
     <a class="brand" href="#" aria-label="The Bigger Story Hub home"><span class="brandmark">B</span><span>THE BIGGER STORY HUB<small>NEWS • CONTEXT • STORIES</small></span></a>
-    <nav class="navlinks" id="navlinks"><a class="active" href="#latest" data-filter="All">Latest</a><a href="#latest" data-filter="Africa">Africa</a><a href="#latest" data-filter="World">World</a><a href="#latest" data-filter="Politics">Politics</a><a href="#latest" data-filter="Business">Business</a><a href="#latest" data-filter="Technology">Technology</a><a href="#latest" data-filter="Culture">Culture</a><a href="#latest" data-filter="Opinion">Opinion</a></nav>
+    <nav class="navlinks" id="navlinks"><a class="active" href="#latest" data-filter="All">Latest</a><a href="#category-directory">All Categories</a><a href="#the-hub">The Hub</a><a href="#newsletter">Subscribe</a></nav>
     <div class="navright"><button class="searchbtn" id="searchToggle" aria-label="Open search">⌕</button><a class="subscribe" href="#newsletter">Subscribe</a><button class="menu" id="menu" aria-label="Toggle menu">☰</button></div>
   </div></header>
   <div class="searchpanel" id="searchpanel"><div class="wrap"><input id="search" type="search" placeholder="Search headlines and topics…" aria-label="Search stories"></div></div>
   <div class="breaking"><div class="wrap"><b>THE EDITORIAL STANDARD</b><span>Context matters. Verify information, read beyond headlines and make room for voices that deserve to be heard.</span></div></div>
+  <section class="category-directory" id="category-directory" aria-label="Browse all news categories">
+    <div class="wrap"><strong>Browse categories</strong><div class="category-links" id="categoryLinks"></div></div>
+  </section>
   <main id="main-content">
     <section class="wrap hero" aria-label="Featured stories">
       <article class="lead"><div class="leadcontent"><div class="eyebrow">The bigger picture · Featured</div><h1>Stories that help us understand a changing world.</h1><p>Independent perspectives, useful context and human stories from Nigeria, Africa and beyond.</p><div class="meta">THE BIGGER STORY HUB &nbsp;·&nbsp; EDITORIAL DESK</div><a class="read" href="#latest">Explore the latest stories&nbsp; ↗</a></div></article>
@@ -329,10 +344,13 @@
         <div class="empty" id="empty">No matching sample stories. Try another search or category.</div>
       </div>
       <aside class="sidebar">
-        <div class="sidebox"><h3>Explore topics</h3><div class="topics" id="topics"><button class="topic selected" data-filter="All">All</button><button class="topic" data-filter="Politics">Politics</button><button class="topic" data-filter="Business">Business</button><button class="topic" data-filter="Technology">Technology</button><button class="topic" data-filter="Entertainment">Entertainment</button><button class="topic" data-filter="Opinion">Opinion</button><button class="topic" data-filter="Education">Education</button><button class="topic" data-filter="Africa">Africa</button><button class="topic" data-filter="World">World</button><button class="topic" data-filter="Sports">Sports</button></div></div>
+        <div class="sidebox"><h3>Explore topics</h3><div class="topics" id="topics"><button class="topic selected" data-filter="All">All</button></div></div>
         <div class="sidebox"><h3>Editor's picks</h3><div class="trend"><b>01</b><div><a href="#latest">The value of asking better questions</a><small>MEDIA LITERACY · SAMPLE</small></div></div><div class="trend"><b>02</b><div><a href="#latest">Local ideas with wider impact</a><small>COMMUNITY · SAMPLE</small></div></div><div class="trend"><b>03</b><div><a href="#latest">A guide to reading digital news</a><small>EXPLAINER · SAMPLE</small></div></div></div>
       </aside>
     </div></section>
+    <section class="section" id="category-sections" aria-label="Stories by category">
+      <div class="wrap" id="categorySections"></div>
+    </section>
     <section class="hub-section" id="the-hub"><div class="wrap">
       <div class="hub-heading"><div><div class="category">Beyond the headlines</div><h2>The hub is bigger than the news.</h2></div><p>Explore ideas, practical knowledge and opportunities that help people turn information into meaningful action.</p></div>
       <div class="hub-grid">
@@ -366,21 +384,103 @@
   <footer><div class="wrap"><div class="foot"><div><a class="brand" href="#"><span class="brandmark">B</span><span>THE BIGGER STORY HUB<small>NEWS • CONTEXT • STORIES</small></span></a><p>Independent news, wider perspectives and stories that help readers understand the issues shaping our communities and our world.</p></div><div class="footlinks"><a href="#latest">Latest stories</a><a href="#the-hub">Explore the hub</a><a href="#newsletter">Subscribe</a><a href="mailto:hello@thebiggerstoryhub.com">Contact the newsroom</a></div></div><div class="copyright"><span>© <span id="year"></span> THE BIGGER STORY HUB. All rights reserved.</span><span>Verify. Understand. Tell the bigger story.</span></div></div></footer>
   <script>
     const $ = s => document.querySelector(s);
+    const categories = [
+      'Politics','Business','Education','Technology','Innovation','Entrepreneurship',
+      'Leadership','Manufacturing','Entertainment','Sports','Lifestyle','Community',
+      'Health','Agriculture','Environment','World News','National News','Local News',
+      'Crime','Opinion','Interviews','Investigation'
+    ];
+    const categoryKey = value => String(value || '').trim().toLowerCase();
+    const categoryId = value => 'category-' + categoryKey(value).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    function makeStoryCard(article){
+      const card = document.createElement('article');
+      card.className = 'story';
+      card.style.cursor = 'pointer';
+      card.dataset.category = article.category || 'Uncategorized';
+      card.addEventListener('click', () => {
+        window.location.href = `article.html?id=${encodeURIComponent(article._id)}`;
+      });
+      const art = document.createElement('div');
+      art.className = 'storyart';
+      if (article.imageUrl) {
+        art.style.backgroundImage = `url("${article.imageUrl}")`;
+        art.style.backgroundSize = 'cover';
+        art.style.backgroundPosition = 'center';
+      }
+      const body = document.createElement('div');
+      body.className = 'storybody';
+      const category = document.createElement('div');
+      category.className = 'category';
+      category.textContent = article.category || 'Uncategorized';
+      const title = document.createElement('h3');
+      title.textContent = article.title || 'Untitled article';
+      const paragraph = document.createElement('p');
+      const excerpt = (article.body || [])
+        .map(block => (block.children || []).map(child => child.text || '').join(' '))
+        .join(' ');
+      paragraph.textContent = excerpt.length > 180 ? excerpt.slice(0,180) + '…' : excerpt;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = [
+        article.author,
+        article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : ''
+      ].filter(Boolean).join(' · ');
+      body.append(category,title,paragraph,meta);
+      card.append(art,body);
+      return card;
+    }
+    function buildCategoryNavigation(){
+      const links = document.getElementById('categoryLinks');
+      const topics = document.getElementById('topics');
+      categories.forEach(name => {
+        const link = document.createElement('a');
+        link.href = '#' + categoryId(name);
+        link.textContent = name;
+        links.append(link);
+        const button = document.createElement('button');
+        button.className = 'topic';
+        button.type = 'button';
+        button.dataset.filter = name;
+        button.textContent = name;
+        topics.append(button);
+      });
+    }
+    buildCategoryNavigation();
     $('#year').textContent = new Date().getFullYear();
     $('#today').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
     $('#menu').addEventListener('click',()=>$('#navlinks').classList.toggle('open'));
     document.querySelectorAll('#navlinks a').forEach(a=>a.addEventListener('click',()=>{
       $('#navlinks').classList.remove('open');
-      activeFilter=a.dataset.filter||'All';
-      document.querySelectorAll('#navlinks a').forEach(link=>{link.classList.toggle('active',link===a);if(link===a)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
-      document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b.dataset.filter===activeFilter));
-      filterStories();
+      if(a.dataset.filter){
+        activeFilter=a.dataset.filter;
+        document.querySelectorAll('#navlinks a').forEach(link=>{link.classList.toggle('active',link===a);if(link===a)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
+        document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b.dataset.filter===activeFilter));
+        filterStories();
+      }
     }));
     $('#searchToggle').addEventListener('click',()=>{$('#searchpanel').classList.toggle('open');if($('#searchpanel').classList.contains('open'))$('#search').focus()});
     let activeFilter='All';
-    function filterStories(){const q=$('#search').value.trim().toLowerCase();let shown=0;document.querySelectorAll('.story').forEach(card=>{const okCat=activeFilter==='All'||card.dataset.category===activeFilter;const okText=card.textContent.toLowerCase().includes(q);card.hidden=!(okCat&&okText);if(!card.hidden)shown++});$('#empty').style.display=shown?'none':'block'}
+    function filterStories(){
+      const q=$('#search').value.trim().toLowerCase();
+      document.querySelectorAll('.story').forEach(card=>{
+        const okCat=activeFilter==='All'||categoryKey(card.dataset.category)===categoryKey(activeFilter);
+        const okText=card.textContent.toLowerCase().includes(q);
+        card.hidden=!(okCat&&okText);
+      });
+      const visibleLatest=[...document.querySelectorAll('#storyGrid .story')].filter(card=>!card.hidden).length;
+      $('#empty').style.display=visibleLatest?'none':'block';
+      document.querySelectorAll('.category-section').forEach(section=>{
+        const visible=[...section.querySelectorAll('.story')].filter(card=>!card.hidden).length;
+        const message=section.querySelector('.category-empty');
+        if(message) message.hidden=visible>0;
+      });
+    }
     $('#search').addEventListener('input',filterStories);
-    document.querySelectorAll('.topic').forEach(btn=>btn.addEventListener('click',()=>{activeFilter=btn.dataset.filter;document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b===btn));filterStories()}));
+    document.querySelectorAll('.topic').forEach(btn=>btn.addEventListener('click',()=>{
+      activeFilter=btn.dataset.filter;
+      document.querySelectorAll('.topic').forEach(b=>b.classList.toggle('selected',b===btn));
+      filterStories();
+    }));
     
   // Load published stories from Sanity CMS
 const sanityQuery = `*[_type == "article" && editorialStatus == "ready" && defined(publishedAt) && publishedAt <= now() && (!defined(scheduledAt) || scheduledAt <= now())] | order(publishedAt desc) {
@@ -454,61 +554,46 @@ if (article.imageUrl) {
     grid.replaceChildren();
 
     if (stories.length === 0) {
-      empty.textContent = 'No published articles yet.';
+      empty.textContent = 'No published articles yet. Choose a category below to explore the newsroom sections.';
       empty.style.display = 'block';
-      return;
     }
 
     stories.forEach(article => {
-      const card = document.createElement('article');
-      card.className = 'story';
-      card.style.cursor = 'pointer';
+      grid.append(makeStoryCard(article));
+    });
 
-card.addEventListener('click', () => {
-  window.location.href = `article.html?id=${encodeURIComponent(article._id)}`;
-});
-      card.dataset.category = article.category || 'Uncategorized';
+    const categoryContainer = document.getElementById('categorySections');
+    categoryContainer.replaceChildren();
+    categories.forEach(name => {
+      const section = document.createElement('section');
+      section.className = 'category-section';
+      section.id = categoryId(name);
 
-      const art = document.createElement('div');
-      art.className = 'storyart';
+      const heading = document.createElement('div');
+      heading.className = 'sectionhead';
+      const headingLeft = document.createElement('div');
+      const eyebrow = document.createElement('div');
+      eyebrow.className = 'category';
+      eyebrow.textContent = 'Explore ' + name;
+      const title = document.createElement('h2');
+      title.textContent = name;
+      headingLeft.append(eyebrow,title);
+      const headingNote = document.createElement('p');
+      headingNote.textContent = 'Latest published stories';
+      heading.append(headingLeft,headingNote);
 
-      if (article.imageUrl) {
-        art.style.backgroundImage = `url("${article.imageUrl}")`;
-        art.style.backgroundSize = 'cover';
-        art.style.backgroundPosition = 'center';
-      }
+      const cards = document.createElement('div');
+      cards.className = 'cards';
+      const matchingStories = stories.filter(article => categoryKey(article.category) === categoryKey(name));
+      matchingStories.forEach(article => cards.append(makeStoryCard(article)));
 
-      const body = document.createElement('div');
-      body.className = 'storybody';
+      const noArticles = document.createElement('div');
+      noArticles.className = 'category-empty';
+      noArticles.textContent = 'No published articles in this category yet. New stories will appear here automatically.';
+      noArticles.hidden = matchingStories.length > 0;
 
-      const category = document.createElement('div');
-      category.className = 'category';
-      category.textContent = article.category || 'Uncategorized';
-
-      const title = document.createElement('h3');
-      title.textContent = article.title || 'Untitled article';
-
-      const paragraph = document.createElement('p');
-      const excerpt = (article.body || [])
-        .map(block => (block.children || [])
-          .map(child => child.text || '').join(' '))
-        .join(' ');
-      paragraph.textContent = excerpt.length > 180
-        ? excerpt.slice(0, 180) + '…'
-        : excerpt;
-
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      meta.textContent = [
-        article.author,
-        article.publishedAt
-          ? new Date(article.publishedAt).toLocaleDateString()
-          : ''
-      ].filter(Boolean).join(' · ');
-
-      body.append(category, title, paragraph, meta);
-      card.append(art, body);
-      grid.append(card);
+      section.append(heading,cards,noArticles);
+      categoryContainer.append(section);
     });
 
     empty.style.display = 'none';
