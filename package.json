@@ -1,0 +1,8 @@
+{
+  "name": "the-bigger-story-hub",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "cf-workers-og": "^3.0.1"
+  }
+}
