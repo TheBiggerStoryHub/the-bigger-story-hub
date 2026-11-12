@@ -75,7 +75,7 @@ const description = escapeHtml(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title} | The Bigger Story Hub</title>
+<title>${title}</title>
 <meta name="description" content="${description}">
 <meta property="og:type" content="article">
 <meta property="og:title" content="${title}">
