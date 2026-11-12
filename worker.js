@@ -68,7 +68,11 @@ const description = escapeHtml(
   shorten(article.excerpt || article.title || "Read the full story.", 125)
 );
 
-        const image = escapeHtml(article.imageUrl || "");
+       const image = escapeHtml(
+  article.imageUrl
+    ? `${article.imageUrl}?w=1200&h=630&fit=crop&auto=format`
+    : ""
+);
 
         const html = `<!DOCTYPE html>
 <html lang="en">
