@@ -1,4 +1,5 @@
 import { ImageResponse } from "cf-workers-og/html";
+import { PhotonImage } from "@cf-wasm/photon/workerd";
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -65,12 +66,28 @@ if (url.pathname === "/article-social-image") {
       </div>
     `;
 
-    return ImageResponse.create(html, {
-      width: 1200,
-      height: 630,
-      format: "jpeg"
-    });
+   const generatedImage = await ImageResponse.create(html, {
+  width: 1200,
+  height: 630,
+  format: "png"
+});
 
+const pngBytes = new Uint8Array(
+  await generatedImage.arrayBuffer()
+);
+
+const photonImage = PhotonImage.new_from_byteslice(pngBytes);
+
+const compressedBytes = photonImage.get_bytes_jpeg(75);
+
+photonImage.free();
+
+return new Response(compressedBytes, {
+  headers: {
+    "Content-Type": "image/jpeg",
+    "Cache-Control": "public, max-age=86400"
+  }
+});
   } catch (error) {
     return new Response("Unable to generate social image.", {
       status: 500
