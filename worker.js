@@ -68,7 +68,7 @@ if (url.pathname === "/article-social-image") {
     return ImageResponse.create(html, {
       width: 1200,
       height: 630,
-      format: "png"
+      format: "jpeg"
     });
 
   } catch (error) {
