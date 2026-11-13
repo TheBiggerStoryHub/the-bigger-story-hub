@@ -141,10 +141,7 @@ const description = escapeHtml(
        const image = escapeHtml(
   `${url.origin}/article-social-image?id=${encodeURIComponent(articleId)}`
 );
-  article.imageUrl
-    ? `${article.imageUrl}?w=1200&h=630&fit=crop&auto=format`
-    : ""
-);
+
 
         const html = `<!DOCTYPE html>
 <html lang="en">
