@@ -3,6 +3,77 @@ import { PhotonImage } from "@cf-wasm/photon/workerd";
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    
+    if (url.pathname === "/rss.xml") {
+      try {
+        const query = `*[_type == "article" && editorialStatus == "ready" && defined(publishedAt)] | order(publishedAt desc)[0...50] {
+          _id,
+          title,
+          publishedAt
+        }`;
+
+        const params = new URLSearchParams();
+        params.set("query", query);
+
+        const response = await fetch(
+          `https://pj5fusph.api.sanity.io/v2025-11-07/data/query/production?${params}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Sanity RSS request failed.");
+        }
+
+        const data = await response.json();
+        const articles = data.result || [];
+
+        const escapeXml = (value = "") =>
+          String(value).replace(/[<>&'"]/g, char => ({
+            "<": "&lt;",
+            ">": "&gt;",
+            "&": "&amp;",
+            "'": "&apos;",
+            '"': "&quot;"
+          })[char]);
+
+        const items = articles.map(article => {
+          const articleUrl =
+            `${url.origin}/article.html?id=${encodeURIComponent(article._id)}`;
+
+          return `
+            <item>
+              <title>${escapeXml(article.title || "Untitled")}</title>
+              <link>${escapeXml(articleUrl)}</link>
+              <guid isPermaLink="false">${escapeXml(article._id)}</guid>
+              <description>${escapeXml(article.title || "Read the latest story from The Bigger Story Hub.")}</description>
+              <pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate>
+            </item>`;
+        }).join("");
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>The Bigger Story Hub</title>
+            <link>${url.origin}</link>
+            <description>Beyond the Headlines. Get the latest news and important stories.</description>
+            <language>en</language>
+            ${items}
+          </channel>
+        </rss>`;
+
+        return new Response(xml, {
+          headers: {
+            "Content-Type": "application/rss+xml; charset=utf-8",
+            "Cache-Control": "public, max-age=300"
+          }
+        });
+
+      } catch (error) {
+        return new Response("Unable to generate RSS feed.", {
+          status: 500
+        });
+      }
+    }
+
 if (url.pathname === "/article-social-image") {
   try {
     const articleId = url.searchParams.get("id");
