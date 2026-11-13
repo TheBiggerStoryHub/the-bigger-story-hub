@@ -42,7 +42,11 @@ if (url.pathname === "/article-social-image") {
       })[char]);
 
     const title = escapeHtml(article.title || "The Bigger Story Hub");
-    const imageUrl = escapeHtml(article.imageUrl || "");
+    const imageUrl = escapeHtml(
+  article.imageUrl
+    ? `${article.imageUrl}?w=1200&h=630&fit=crop&auto=format`
+    : ""
+);
 
     const html = `
       <div style="display:flex;position:relative;width:100%;height:100%;background-color:#081427;overflow:hidden;color:white;">
